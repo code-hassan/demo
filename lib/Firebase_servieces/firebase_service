@@ -1,0 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class FirebaseServiceClass {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<UserData> getUserData() async {
+    try {
+      DocumentSnapshot documentSnapshot = await _firestore.collection("users").get();
+      if (documentSnapshot.exists) {
+        final data = documentSnapshot.data() as Map<String, dynamic>;
+        return UserData.fromJson(data);
+      } else {
+        throw Exception('Document not found');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+      throw e;
+    }
+  }
+}
