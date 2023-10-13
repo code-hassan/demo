@@ -18,18 +18,16 @@ class _FirestoreDemoState extends State<FirestoreDemo> {
   TextEditingController emailController = TextEditingController();
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
  
-  File? _pickedFile;
+  String pickedFile = "";
+   PickedFile? _pickedImage;
 
-  Future pickImage() async {
-    final picker = ImagePicker();
-    final returnImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-    
-      setState(() {
-        _pickedFile = File(returnImage!.path);
-      });
-
-      print("image path${_pickedFile!.path}");
-  }
+  // Future pickImage() async {
+  //   final picker = ImagePicker();
+  //   final returnImage = await picker.pickImage(source: ImageSource.gallery);
+  //   if(returnImage != null){
+  //     pickedFile = returnImage.path.toString();
+  //   }
+  // }
  
   @override
   Widget build(BuildContext context) {
@@ -41,31 +39,42 @@ class _FirestoreDemoState extends State<FirestoreDemo> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-              
-           
-         _pickedFile != null ? Container(height: 50,width: 50,child: Image.file(_pickedFile!),) : const Text("Please select an image"),
-        
-
-
+            CircleAvatar(
+              radius:  50,
+              backgroundImage: pickedFile.isNotEmpty 
+                  ? FileImage(File(pickedFile.toString())) : null,
+            ),
+            SizedBox(height: 10,),
             CustomTextField(
                 validationType: 1,
                 controller: nameController,
                 hintText: "Enter your name",
               ),
+            SizedBox(height: 10,),
               CustomTextField(
                 validationType: 2,
                 controller: numberController,
                 hintText: "Enter your number",
               ),
+            SizedBox(height: 10,),
               CustomTextField(
                 validationType: 3,
                 controller: emailController,
                 hintText: "Enter your email",
               ),
+            SizedBox(height: 10,),
             ElevatedButton(
               onPressed: () {
-                addData();
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SecondScreen()));
+                if(nameController.text.isEmpty && emailController.text.isEmpty && numberController.text.isEmpty){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SecondScreen()));
+                }else{
+                  addData();
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SecondScreen()));
+                  nameController.clear();
+                  emailController.clear();
+                  numberController.clear();
+                }
+
                 
               },
               child: Text('Add Data'),
@@ -81,7 +90,8 @@ class _FirestoreDemoState extends State<FirestoreDemo> {
             SizedBox(height: 10,),
            InkWell(
              onTap: (){
-               pickImage();
+              // pickImage();
+               _pickImageFromGallery(context);
              },
              child: Icon(Icons.image,color: Colors.lightBlue,size: 30,),
            ),
@@ -112,7 +122,19 @@ class _FirestoreDemoState extends State<FirestoreDemo> {
     });
   }
 
+   Future<void> _pickImageFromGallery(BuildContext context) async {
+     final picker = ImagePicker();
+     final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
+     if (pickedFile != null) {
+       setState(() {
+         // Update the state with the selected image
+         _pickedImage = pickedFile;
+       });
+     } else {
+       // Handle the case when the user cancels image picking.
+       print("Image picking was canceled.");
+     }
 
 
 

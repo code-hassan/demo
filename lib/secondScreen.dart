@@ -15,40 +15,40 @@ class _SecondScreenState extends State<SecondScreen> {
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Future<List<UserData>> getUserData() async {
-  //   List<UserData> userDataList = [];
-  //   try {
+  Future<List<UserData>> getUserData() async {
+    List<UserData> userDataList = [];
+    try {
 
-  //     QuerySnapshot querySnapshot = await _firestore.collection('users').get();
-  //     querySnapshot.docs.forEach((doc) {
-  //       var fetchData = doc.data();
-  //      if (fetchData != null) {
-  //         userDataList.add(UserData.fromJson(fetchData as Map<String, dynamic>));
-  //       }
-  //     });
-
-  //     return userDataList;
-
-
-  //   } catch (e) {
-  //     print('Error fetching data: $e');
-  //     throw e;
-  //   }
-  // }
-
-Stream<List<UserData>> streamUserData() {
-    return _firestore.collection('users').snapshots().map((querySnapshot) {
-      return querySnapshot.docs.map((doc) {
+      QuerySnapshot querySnapshot = await _firestore.collection('users').get();
+      querySnapshot.docs.forEach((doc) {
         var fetchData = doc.data();
-        return UserData.fromJson(fetchData);
-      }).toList();
-    });
+       if (fetchData != null) {
+          userDataList.add(UserData.fromJson(fetchData as Map<String, dynamic>));
+        }
+      });
+
+      return userDataList;
+
+
+    } catch (e) {
+      print('Error fetching data: $e');
+      throw e;
+    }
   }
+
+// Stream<List<UserData>> streamUserData() {
+//     return _firestore.collection('users').snapshots().map((querySnapshot) {
+//       return querySnapshot.docs.map((doc) {
+//         var fetchData = doc.data();
+//         return UserData.fromJson(fetchData);
+//       }).toList();
+//     });
+//   }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    streamUserData();
+    getUserData();
   }
 
 
@@ -61,56 +61,55 @@ Stream<List<UserData>> streamUserData() {
         centerTitle: true,
         title: Text("Get Data in Firebase",style: TextStyle(color: Colors.white),),
         ),
-      body: 
-    //   FutureBuilder<List<UserData>>(
-    //   future: getUserData(),
-    //  builder: (context, snapshot) {
-    //     if (snapshot.connectionState == ConnectionState.waiting) {
-    //       return CircularProgressIndicator();
-    //     } else if (snapshot.hasError) {
-    //       return Text('Error: ${snapshot.error}');
-    //     } else if (snapshot.hasData) {
-    //       final userDataList = snapshot.data;
-    //       return ListView.builder(
-    //         itemCount: userDataList?.length,
-    //         itemBuilder: (context, index) {
-    //           final data = userDataList?[index];
-    //           return ListTile(
-    //             title: Text(data!.name,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-    //             subtitle: Column(
-    //               mainAxisAlignment: MainAxisAlignment.start,
-    //               crossAxisAlignment: CrossAxisAlignment.start,
-    //               children: [       
-    //               Text(data.email,style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal),),
-    //               Text(data.number,style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal),),
-                  
-    //             ],) 
-                
-              
-    //           );
-    //         },
-    //       );
-    //     }else {
-    //       return Text('No data yet');
-    //     }
-    //   },
-    //  ),
-   
-   StreamBuilder<List<UserData>>(
-      stream: streamUserData(),
-      builder: (context, snapshot) {
+      body: FutureBuilder<List<UserData>>(
+      future: getUserData(),
+     builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator();
         } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}',style: TextStyle(color: Colors.red),);
+          return Text('Error: ${snapshot.error}');
         } else if (snapshot.hasData) {
-          final userDataList = snapshot.data ?? [];
-          return UserDataListWidget(userDataList: userDataList);
-        } else {
+          final userDataList = snapshot.data;
+          return ListView.builder(
+            itemCount: userDataList?.length,
+            itemBuilder: (context, index) {
+              final data = userDataList?[index];
+              return ListTile(
+                title: Text(data!.name,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                subtitle: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                  Text(data.email,style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal),),
+                  Text(data.number,style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal),),
+                  
+                ],)
+                
+              
+              );
+            },
+          );
+        }else {
           return Text('No data yet');
         }
       },
-    ),
+     ),
+   
+   // StreamBuilder<List<UserData>>(
+   //    stream: streamUserData(),
+   //    builder: (context, snapshot) {
+   //      if (snapshot.connectionState == ConnectionState.waiting) {
+   //        return CircularProgressIndicator();
+   //      } else if (snapshot.hasError) {
+   //        return Text('Error: ${snapshot.error}',style: TextStyle(color: Colors.red),);
+   //      } else if (snapshot.hasData) {
+   //        final userDataList = snapshot.data ?? [];
+   //        return UserDataListWidget(userDataList: userDataList);
+   //      } else {
+   //        return Text('No data yet');
+   //      }
+   //    },
+   //  ),
     );
   }
 }
