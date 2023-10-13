@@ -43,7 +43,7 @@ class _FirestoreDemoState extends State<FirestoreDemo> {
           children: <Widget>[
               
            
-      //    _pickedFile != null ? Container(height: 50,width: 50,child: Image.file(_pickedFile!),) : const Text("Please select an image"),
+         _pickedFile != null ? Container(height: 50,width: 50,child: Image.file(_pickedFile!),) : const Text("Please select an image"),
         
 
 
