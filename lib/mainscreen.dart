@@ -19,7 +19,7 @@ class _FirestoreDemoState extends State<FirestoreDemo> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
  
   String pickedFile = "";
-   PickedFile? _pickedImage;
+   XFile? _pickedImage;
 
   // Future pickImage() async {
   //   final picker = ImagePicker();
@@ -39,11 +39,23 @@ class _FirestoreDemoState extends State<FirestoreDemo> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            CircleAvatar(
-              radius:  50,
-              backgroundImage: pickedFile.isNotEmpty 
-                  ? FileImage(File(pickedFile.toString())) : null,
-            ),
+           _pickedImage != null
+            ? Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+          
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  
+                  image: FileImage(File(_pickedImage!.path)), fit: BoxFit.cover)
+                  ),
+                  ) : Container(),
+            // CircleAvatar(
+            //   radius:  50,
+            //   backgroundImage: _pickedImage != null ? FileImage(File(_pickedImage!.path)) : null,
+            //   foregroundImage:  _pickedImage != null ? FileImage(File(_pickedImage!.path)) : null,
+            // ),
             SizedBox(height: 10,),
             CustomTextField(
                 validationType: 1,
@@ -123,14 +135,16 @@ class _FirestoreDemoState extends State<FirestoreDemo> {
   }
 
    Future<void> _pickImageFromGallery(BuildContext context) async {
+    print("vvvvvvvvvvvvvvvvvvvvvvvvvvvv");
      final picker = ImagePicker();
-     final pickedFile = await picker.getImage(source: ImageSource.gallery);
+     final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
      if (pickedFile != null) {
        setState(() {
          // Update the state with the selected image
          _pickedImage = pickedFile;
        });
+
      } else {
        // Handle the case when the user cancels image picking.
        print("Image picking was canceled.");
@@ -138,4 +152,5 @@ class _FirestoreDemoState extends State<FirestoreDemo> {
 
 
 
+}
 }
